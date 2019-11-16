@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29509.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionMonitor.Common", "SessionMonitor.Common\SessionMonitor.Common.csproj", "{4D398401-5BAA-4D13-B843-136F83C1FBF2}"
 EndProject
@@ -9,7 +9,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionMonitor.WindowsApp",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionMonitor.WindowsSvc", "SessionMonitor.WindowsSvc\SessionMonitor.WindowsSvc.csproj", "{CBD1D0B1-36A1-4946-AABF-55ED4A63CEA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SessionMonitor.WebSvc", "SessionMonitor.WebSvc\SessionMonitor.WebSvc.csproj", "{36E786FC-A3E4-48C1-8010-00D5B6EB3C6B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SessionMonitor.WebSvc", "SessionMonitor.WebSvc\SessionMonitor.WebSvc.csproj", "{36E786FC-A3E4-48C1-8010-00D5B6EB3C6B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "About", "About", "{DD35EB42-C971-46D4-A3BD-8441D98974B4}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
