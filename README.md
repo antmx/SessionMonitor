@@ -18,7 +18,7 @@ Tool for finding out who's logged into a Windows server
 ## Control SessionMonitor Windows Service on a remote server via CMD
  - Connect to remote server:
    ```
-   C:\> net use \\WIN-ADGLFHBJRGG M0nday2019! /user:WIN-ADGLFHBJRGG\administrator`
+   C:\> net use \\WIN-ADGLFHBJRGG P4ssw0rd /user:WIN-ADGLFHBJRGG\administrator`
    ```
  - See if service is running on remote server:
    ```
