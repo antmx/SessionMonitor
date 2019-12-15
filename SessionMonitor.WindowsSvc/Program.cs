@@ -1,27 +1,58 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using SessionMonitor.Common;
+using System;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SessionMonitor.WindowsSvc
 {
     static class Program
     {
+        internal static string LogName = "SessionMonitor.WindowsService";
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        static void Main()
+        static void Main(string[] args)
         {
-            ServiceBase[] ServicesToRun;
-
-            ServicesToRun = new ServiceBase[]
+            if (args != null && args.Length > 0 && string.Equals(args[0], "console", StringComparison.OrdinalIgnoreCase))
             {
-                new SessionService()
+                RunConsole();
+            }
+            else
+            {
+                RunSvc();
+            }
+        }
+
+        private static void RunSvc()
+        {
+            log4net.LogManager.GetLogger(LogName).Info("RunSvc");
+
+            ServiceBase[] servicesToRun = new ServiceBase[]
+            {
+                new SessionService(new SessionSwitchListener())
             };
 
-            ServiceBase.Run(ServicesToRun);
+            ServiceBase.Run(servicesToRun);
+        }
+
+        private static void RunConsole()
+        {
+            log4net.LogManager.GetLogger(LogName).Info("RunConsole");
+
+            using (SessionServiceWrapper wrapper = new SessionServiceWrapper(new SessionSwitchListener()))
+            {
+                try
+                {
+                    wrapper.TestStart();
+                    Console.ReadLine();
+                    wrapper.TestStop();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Error: " + exception.Message);
+                    Console.ReadLine();
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SessionMonitor.Common;
+﻿using log4net;
+using SessionMonitor.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,59 +14,77 @@ namespace SessionMonitor.WindowsSvc
 {
     public partial class SessionService : ServiceBase
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog _log = LogManager.GetLogger(Program.LogName);
 
-        public SessionService()
+        private ISessionSwitchListener _sessionSwitchListener;
+
+        public SessionService(ISessionSwitchListener sessionSwitchListener)
         {
             InitializeComponent();
+
+            _sessionSwitchListener = sessionSwitchListener;
         }
 
+        /// <summary>
+        /// Specifies actions to take when the service starts.
+        /// </summary>
+        /// <param name="args"></param>
         protected override void OnStart(string[] args)
         {
+            _log.Info("Starting SessionService");
+
+            _sessionSwitchListener = new SessionSwitchListener();
+
+            _sessionSwitchListener.SessionSwitched += _sessionSwitchListener_SessionSwitched;
+            //_sessionSwitchListener.Run();
+
+            ReportSessionInfo();
         }
 
+        /// <summary>
+        /// Specifies actions to take when a service stops running.
+        /// </summary>
         protected override void OnStop()
         {
+            _log.Info("Stopping SessionService");
+
+            _sessionSwitchListener.SessionSwitched -= _sessionSwitchListener_SessionSwitched;
         }
 
-        private void InitSessionSwitchListener()
+        private void _sessionSwitchListener_SessionSwitched(object sender, SessionSwitchedEventArgs e)
         {
-            var listener = new SessionSwitchListener();
+            _log.InfoFormat($"SessionSwitched: {e.Reason} encountered at {DateTime.Now:HH:mm:ss}, on {e.ComputerName}, by {e.UserName}");
 
-            listener.SessionSwitched += Listener_SessionSwitched;
-
-            listener.Run();
+            ReportSessionInfo();
         }
 
-        private void Listener_SessionSwitched(object sender, SessionSwitchedEventArgs e)
-        {
-            log.InfoFormat($"SessionSwitched: {e.Reason} encountered at {DateTime.Now:HH:mm:ss}, on {e.ComputerName}, by {e.UserName}");
+        private void ReportSessionInfo() {
 
             foreach (SessionInfo session in FetchSessionInfo())
             {
-                log.InfoFormat($"Username={session.Username}, LogonType={session.LogonType}, LogonServer={session.LogonServer}, LoginDomain={session.LoginDomain}, LoginTime={session.LoginTime}");
+                _log.InfoFormat($"Username={session.Username}, LogonType={session.LogonType}, LogonServer={session.LogonServer}, LoginDomain={session.LoginDomain}, LoginTime={session.LoginTime}");
 
                 // todo make call to Web API
             }
         }
 
-        private List<SessionInfo> FetchSessionInfo()
+        private IEnumerable<SessionInfo> FetchSessionInfo()
         {
             string[] validLogonTypes = { "Interactive", "Network", "RemoteInteractive" };
             string[] invalidLoginDomains = { "Window Manager", "Font Driver Host" };
+            string[] invalidUsernames = { "ANONYMOUS LOGON" };
 
             var reader = new SessionReader();
 
             IEnumerable<SessionInfo> sessions = reader.Read()
                 .Where((s) => validLogonTypes.Contains(s.LogonType, StringComparer.OrdinalIgnoreCase)
-                   && !invalidLoginDomains.Contains(s.LoginDomain, StringComparer.OrdinalIgnoreCase))
+                   && !invalidLoginDomains.Contains(s.LoginDomain, StringComparer.OrdinalIgnoreCase)
+                   && !invalidUsernames.Contains(s.Username, StringComparer.OrdinalIgnoreCase))
                 .Distinct()
-                .OrderBy((s) => s.Username)
-                .ThenBy((s) => s.LoginTime);
+                .OrderBy((s) => s.LoginTime)
+                .ThenBy((s) => s.Username);
 
-            List<SessionInfo> results = sessions.ToList();
-
-            return results;
+            return sessions;
         }
     }
 }

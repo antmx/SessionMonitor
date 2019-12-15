@@ -1,7 +1,7 @@
 # SessionMonitor Windows Service
 Tool for finding out who's logged into a Windows server
 
-## Install SessionMonitor Windows Service on a server via Powershell
+## Install SessionMonitor Windows Service onto a server via Powershell
  - Upgrade Powershell to a version that supports necessary Cmdlets:
    ```Powershell
    PS iex "& { $(irm https://aka.ms/install-powershell.ps1) } -UseMSI"
@@ -32,3 +32,6 @@ Tool for finding out who's logged into a Windows server
    ```
    C:\> SC \\WIN-ADGLFHBJRGG Start SessionMonitor
    ```
+
+Admin2
+UserX2019
