@@ -32,6 +32,3 @@ Tool for finding out who's logged into a Windows server
    ```
    C:\> SC \\WIN-ADGLFHBJRGG Start SessionMonitor
    ```
-
-Admin2
-UserX2019

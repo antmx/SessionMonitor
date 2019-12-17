@@ -9,6 +9,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using static SessionMonitor.Common.TSManager;
 
 namespace SessionMonitor.WindowsSvc
 {
@@ -60,9 +61,16 @@ namespace SessionMonitor.WindowsSvc
 
         private void ReportSessionInfo() {
 
-            foreach (SessionInfo session in FetchSessionInfo())
+            //foreach (SessionInfo session in FetchSessionInfo())
+            //{
+            //    _log.InfoFormat($"Username={session.Username}, LogonType={session.LogonType}, LogonServer={session.LogonServer}, LoginDomain={session.LoginDomain}, LoginTime={session.LoginTime}");
+
+            //    // todo make call to Web API
+            //}
+
+            foreach (RDPSession item in TSManager.ListRdpUsers("localhost"))
             {
-                _log.InfoFormat($"Username={session.Username}, LogonType={session.LogonType}, LogonServer={session.LogonServer}, LoginDomain={session.LoginDomain}, LoginTime={session.LoginTime}");
+                _log.InfoFormat($"User={item.UserName.Trim()}, Connect State={item.ConnectionState}, Client={item.Client}, Logon Time={item.SessionInfo.LogonTime}, State={item.SessionInfo.State}, Win Station={item.SessionInfo.WinStationName}");
 
                 // todo make call to Web API
             }
@@ -86,5 +94,6 @@ namespace SessionMonitor.WindowsSvc
 
             return sessions;
         }
+
     }
 }

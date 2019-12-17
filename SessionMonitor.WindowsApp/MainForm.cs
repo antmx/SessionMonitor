@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using static SessionMonitor.Common.TSManager;
 
 namespace SessionMonitor.WindowsApp
 {
@@ -22,7 +23,9 @@ namespace SessionMonitor.WindowsApp
 
             InitSessionSwitchListener();
 
-            LoadSessionReaderInfo();
+            //LoadSessionReaderInfo();
+            //LoadTSManagerInfo();
+            PrintRDPInfo();
         }
 
         private void InitSessionSwitchListener()
@@ -31,10 +34,45 @@ namespace SessionMonitor.WindowsApp
 
             listener.SessionSwitched += Listener_SessionSwitched;
 
-            listener.Run();
+            //listener.Run();
 
             lblOutput.Text += "Awaiting session switch event...";
         }
+
+        private void PrintRDPInfo()
+        {
+            List<RDPSession> serverList = TSManager.ListRdpUsers("localhost");
+
+            foreach (RDPSession item in serverList)
+            {
+                Console.WriteLine("> {0} {1,-15} {2,-35} {3,-40}", item.UserName.Trim(), item.ConnectionState, item.Client, item.SessionInfo.LogonTime);
+            }
+
+        }
+
+        //private void LoadTSManagerInfo()
+        //{
+        //    List<TSInfo> results = TSManager.ListUsers("localhost");
+
+        //    var sb = new StringBuilder();
+
+        //    if (results.Count() > 0)
+        //    {
+        //        sb.Append("\nCurrent terminal info:");
+        //    }
+
+        //    foreach (TSInfo item in results)
+        //    {
+        //        string line = string.Format($"UserName={item.UserName}, Domain={item.DomainName}, Connect State={item.ConnectState}, Client Name={item.ClientName}, Session ID={item.SessionId}, Win Station Name={item.WinStationName}, Logon Time={item.LogonTime}, Idle Time={item.IdleTime}");
+
+        //        sb.Append("\n" + line);
+
+        //        log.InfoFormat(line);
+        //    }
+
+        //    lblOutput.Text += sb.ToString();
+
+        //}
 
         private void LoadSessionReaderInfo()
         {
@@ -52,7 +90,8 @@ namespace SessionMonitor.WindowsApp
 
             var sb = new StringBuilder();
 
-            if (sessions.Count() > 0) {
+            if (sessions.Count() > 0)
+            {
                 sb.Append("\nCurrent session info:");
             }
 
@@ -68,14 +107,18 @@ namespace SessionMonitor.WindowsApp
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
-            LoadSessionReaderInfo();
+            //LoadSessionReaderInfo();
+            //LoadTSManagerInfo();
+            PrintRDPInfo();
         }
 
         private void Listener_SessionSwitched(object sender, SessionSwitchedEventArgs e)
         {
             lblOutput.Text += string.Format($"\n{e.Reason} encountered at {DateTime.Now:HH:mm:ss}, on {e.ComputerName}, by {e.UserName}");
 
-            LoadSessionReaderInfo();
+            //LoadSessionReaderInfo();
+            //LoadTSManagerInfo();
+            PrintRDPInfo();
         }
     }
 }

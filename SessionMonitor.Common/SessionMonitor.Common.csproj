@@ -48,6 +48,8 @@
     <Compile Include="SessionReader.cs" />
     <Compile Include="SessionSwitchedEventArgs.cs" />
     <Compile Include="SessionSwitchListener.cs" />
+    <Compile Include="TSInfo.cs" />
+    <Compile Include="TSManager.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
