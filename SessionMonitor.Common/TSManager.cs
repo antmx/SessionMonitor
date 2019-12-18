@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SessionMonitor.Common
 {
-    public class TSManager
+    public partial class TSManager
     {
         [DllImport("wtsapi32.dll")]
         static extern IntPtr WTSOpenServer([MarshalAs(UnmanagedType.LPStr)] String pServerName);
@@ -46,8 +46,21 @@ namespace SessionMonitor.Common
         }
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct WTSINFOW
+        public struct WTSINFOW : IEquatable<WTSINFOW>
         {
+            public bool Equals(WTSINFOW other)
+            {
+                
+                if(SessionId == other.SessionId
+            public int IncomingBytes;
+            public int OutgoingBytes;
+            public int IncomingFrames;
+            public int OutgoingFrames;
+            public int IncomingCompressedBytes;
+            public int OutgoingCompressedBytes;)
+
+            }
+
             public const int WINSTATIONNAME_LENGTH = 32;
             public const int DOMAIN_LENGTH = 17;
             public const int USERNAME_LENGTH = 20;
@@ -140,7 +153,8 @@ namespace SessionMonitor.Common
             {
                 get
                 {
-                    return DateTime.FromFileTimeUtc(CurrentTimeUTC);
+                    //return DateTime.FromFileTimeUtc(CurrentTimeUTC);
+                    return DateTime.FromBinary(CurrentTimeUTC);
                 }
             }
         }
@@ -287,9 +301,14 @@ namespace SessionMonitor.Common
 
         //}
 
-        public static List<RDPSession> ListRdpUsers(String serverName)
+        public static List<RdpSession> ListRdpUsers()
         {
-            List<RDPSession> List = new List<RDPSession>();
+            return ListRdpUsers(null);
+        }
+
+        public static List<RdpSession> ListRdpUsers(String serverName)
+        {
+            List<RdpSession> List = new List<RdpSession>();
 
             IntPtr serverHandle = IntPtr.Zero;
             List<String> resultList = new List<string>();
@@ -297,8 +316,8 @@ namespace SessionMonitor.Common
 
             IntPtr sessionInfoPtr = IntPtr.Zero;
             IntPtr clientNamePtr = IntPtr.Zero;
-            IntPtr wtsinfoPtr = IntPtr.Zero;
-            IntPtr clientDisplayPtr = IntPtr.Zero;
+            IntPtr wtsInfoPtr = IntPtr.Zero;
+            //IntPtr clientDisplayPtr = IntPtr.Zero;
             IntPtr idleTimePtr = IntPtr.Zero;
             IntPtr logonTimePtr = IntPtr.Zero;
 
@@ -319,19 +338,22 @@ namespace SessionMonitor.Common
                         currentSession += dataSize;
 
                         WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSClientName, out clientNamePtr, out bytesReturned);
-                        WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSSessionInfo, out wtsinfoPtr, out bytesReturned);
+                        WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSSessionInfo, out wtsInfoPtr, out bytesReturned);
                         WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSIdleTime, out idleTimePtr, out bytesReturned);
                         WTSQuerySessionInformation(serverHandle, si.SessionID, WTS_INFO_CLASS.WTSLogonTime, out logonTimePtr, out bytesReturned);
 
-                        var wtsinfo = (WTSINFOW)Marshal.PtrToStructure(wtsinfoPtr, typeof(WTSINFOW));
-                        RDPSession temp = new RDPSession();
-                        temp.Client = Marshal.PtrToStringAnsi(IntPtr.Zero);
-                        temp.Server = serverName;
-                        temp.UserName = wtsinfo.UserName;
-                        temp.Domain = wtsinfo.Domain;
-                        temp.ConnectionState = si.State;
-                        temp.SessionId = si.SessionID;
-                        temp.SessionInfo = wtsinfo;
+                        var wtsinfo = (WTSINFOW)Marshal.PtrToStructure(wtsInfoPtr, typeof(WTSINFOW));
+
+                        RdpSession temp = new RdpSession
+                        {
+                            Client = Marshal.PtrToStringAnsi(IntPtr.Zero),
+                            Server = serverName,
+                            UserName = wtsinfo.UserName,
+                            Domain = wtsinfo.Domain,
+                            ConnectionState = si.State,
+                            SessionId = si.SessionID,
+                            SessionInfo = wtsinfo
+                        };
 
                         if (!string.IsNullOrEmpty(temp.UserName))
                         {
@@ -339,8 +361,9 @@ namespace SessionMonitor.Common
                         }
 
                         WTSFreeMemory(IntPtr.Zero);
-                        WTSFreeMemory(wtsinfoPtr);
+                        WTSFreeMemory(wtsInfoPtr);
                     }
+
                     WTSFreeMemory(sessionInfoPtr);
                 }
             }
@@ -354,18 +377,6 @@ namespace SessionMonitor.Common
             }
 
             return List;
-        }
-
-
-        public class RDPSession
-        {
-            public string UserName;
-            public string Domain;
-            public int SessionId;
-            public string Client;
-            public string Server;
-            public WTS_CONNECTSTATE_CLASS ConnectionState;
-            public WTSINFOW SessionInfo;
         }
     }
 }

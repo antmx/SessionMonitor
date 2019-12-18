@@ -10,7 +10,7 @@ namespace SessionMonitor.WindowsApp
 {
     public partial class MainForm : Form
     {
-        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(Program.LogName);
 
         public MainForm()
         {
@@ -21,7 +21,7 @@ namespace SessionMonitor.WindowsApp
         {
             lblOutput.Text = string.Empty;
 
-            InitSessionSwitchListener();
+            //InitSessionSwitchListener();
 
             //LoadSessionReaderInfo();
             //LoadTSManagerInfo();
@@ -41,11 +41,13 @@ namespace SessionMonitor.WindowsApp
 
         private void PrintRDPInfo()
         {
-            List<RDPSession> serverList = TSManager.ListRdpUsers("localhost");
+            List<RdpSession> serverList = TSManager.ListRdpUsers();
 
-            foreach (RDPSession item in serverList)
+            foreach (RdpSession item in serverList)
             {
-                Console.WriteLine("> {0} {1,-15} {2,-35} {3,-40}", item.UserName.Trim(), item.ConnectionState, item.Client, item.SessionInfo.LogonTime);
+                var line = $"> {item.UserName.Trim()} {item.ConnectionState} {item.Client} {item.SessionInfo.LogonTime}";
+                log.Info(line);
+                Console.WriteLine(line);
             }
 
         }

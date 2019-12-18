@@ -9,7 +9,7 @@ namespace SessionMonitor.WindowsSvc
 {
     internal class SessionServiceWrapper : SessionService
     {
-        public SessionServiceWrapper(ISessionSwitchListener sessionSwitchListener) : base(sessionSwitchListener)
+        public SessionServiceWrapper(int timerIntervalMs) : base(timerIntervalMs)
         {
         }
 

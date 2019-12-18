@@ -44,6 +44,7 @@
   <ItemGroup>
     <Compile Include="ISessionSwitchListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RdpSession.cs" />
     <Compile Include="SessionInfo.cs" />
     <Compile Include="SessionReader.cs" />
     <Compile Include="SessionSwitchedEventArgs.cs" />

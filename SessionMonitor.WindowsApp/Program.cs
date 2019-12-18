@@ -5,6 +5,8 @@ namespace SessionMonitor.WindowsApp
 {
     static class Program
     {
+        internal static string LogName = "SessionMonitor.WindowsApp";
+
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
