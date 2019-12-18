@@ -51,6 +51,10 @@
     <Compile Include="SessionSwitchListener.cs" />
     <Compile Include="TSInfo.cs" />
     <Compile Include="TSManager.cs" />
+    <Compile Include="WTSINFOW.cs" />
+    <Compile Include="WTS_CONNECTSTATE_CLASS.cs" />
+    <Compile Include="WTS_INFO_CLASS.cs" />
+    <Compile Include="WTS_SESSION_INFO.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

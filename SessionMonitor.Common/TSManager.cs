@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SessionMonitor.Common
 {
     public partial class TSManager
     {
+        #region DllImports
+
         [DllImport("wtsapi32.dll")]
         static extern IntPtr WTSOpenServer([MarshalAs(UnmanagedType.LPStr)] String pServerName);
 
@@ -34,178 +34,7 @@ namespace SessionMonitor.Common
             out IntPtr ppBuffer,
             out uint pBytesReturned);
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct WTS_SESSION_INFO
-        {
-            public Int32 SessionID;
-
-            [MarshalAs(UnmanagedType.LPStr)]
-            public String pWinStationName;
-
-            public WTS_CONNECTSTATE_CLASS State;
-        }
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        public struct WTSINFOW : IEquatable<WTSINFOW>
-        {
-            public bool Equals(WTSINFOW other)
-            {
-                
-                if(SessionId == other.SessionId
-            public int IncomingBytes;
-            public int OutgoingBytes;
-            public int IncomingFrames;
-            public int OutgoingFrames;
-            public int IncomingCompressedBytes;
-            public int OutgoingCompressedBytes;)
-
-            }
-
-            public const int WINSTATIONNAME_LENGTH = 32;
-            public const int DOMAIN_LENGTH = 17;
-            public const int USERNAME_LENGTH = 20;
-            public WTS_CONNECTSTATE_CLASS State;
-            public int SessionId;
-            public int IncomingBytes;
-            public int OutgoingBytes;
-            public int IncomingFrames;
-            public int OutgoingFrames;
-            public int IncomingCompressedBytes;
-            public int OutgoingCompressedBytes;
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = WINSTATIONNAME_LENGTH)]
-            public byte[] WinStationNameRaw;
-            public string WinStationName
-            {
-                get
-                {
-                    return Encoding.ASCII.GetString(WinStationNameRaw).TrimEnd('\0');
-                }
-            }
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = DOMAIN_LENGTH)]
-            public byte[] DomainRaw;
-            public string Domain
-            {
-                get
-                {
-                    return Encoding.ASCII.GetString(DomainRaw).TrimEnd('\0');
-                }
-            }
-
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = USERNAME_LENGTH + 1)]
-            public byte[] UserNameRaw;
-            public string UserName
-            {
-                get
-                {
-                    return Encoding.ASCII.GetString(UserNameRaw).TrimEnd('\0');
-                }
-            }
-
-            public long ConnectTimeUTC;
-            public DateTime ConnectTime
-            {
-                get
-                {
-                    return DateTime.FromFileTimeUtc(ConnectTimeUTC);
-                }
-            }
-
-            public long DisconnectTimeUTC;
-            public DateTime DisconnectTime
-            {
-                get
-                {
-                    return DateTime.FromFileTimeUtc(DisconnectTimeUTC);
-                }
-            }
-
-            public long LastInputTimeUTC;
-            public DateTime LastInputTime
-            {
-                get
-                {
-                    return DateTime.FromFileTimeUtc(LastInputTimeUTC);
-                }
-            }
-
-            public long IdleTimeUTC;
-            public DateTime IdleTime
-            {
-                get
-                {
-                    return DateTime.FromFileTimeUtc(IdleTimeUTC);
-                }
-            }
-
-            public long LogonTimeUTC;
-            public DateTime LogonTime
-            {
-                get
-                {
-                    return DateTime.FromFileTimeUtc(LogonTimeUTC);
-                }
-            }
-
-            public long CurrentTimeUTC;
-            public DateTime CurrentTime
-            {
-                get
-                {
-                    //return DateTime.FromFileTimeUtc(CurrentTimeUTC);
-                    return DateTime.FromBinary(CurrentTimeUTC);
-                }
-            }
-        }
-
-        public enum WTS_INFO_CLASS : int
-        {
-            WTSInitialProgram,
-            WTSApplicationName,
-            WTSWorkingDirectory,
-            WTSOEMId,
-            WTSSessionId,
-            WTSUserName,
-            WTSWinStationName,
-            WTSDomainName,
-            WTSConnectState,
-            WTSClientBuildNumber,
-            WTSClientName,
-            WTSClientDirectory,
-            WTSClientProductId,
-            WTSClientHardwareId,
-            WTSClientAddress,
-            WTSClientDisplay,
-            WTSClientProtocolType,
-            WTSIdleTime = 17,
-            WTSLogonTime = 18,
-            WTSIncomingBytes = 19,
-            WTSOutgoingBytes = 20,
-            WTSIncomingFrames = 21,
-            WTSOutgoingFrames = 22,
-            WTSClientInfo = 23,
-            WTSSessionInfo = 24,
-            WTSSessionInfoEx = 25,
-            WTSConfigInfo = 26,
-            WTSValidationInfo = 27,
-            WTSSessionAddressV4 = 28,
-            WTSIsRemoteSession = 29
-        }
-
-        public enum WTS_CONNECTSTATE_CLASS : int
-        {
-            WTSActive,
-            WTSConnected,
-            WTSConnectQuery,
-            WTSShadow,
-            WTSDisconnected,
-            WTSIdle,
-            WTSListen,
-            WTSReset,
-            WTSDown,
-            WTSInit
-        }
+        #endregion
 
         public static IntPtr OpenServer(String name)
         {
